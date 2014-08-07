@@ -1,0 +1,555 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using DevExpress.Xpf.Ribbon;
+using Microsoft.Win32;
+using System.Windows.Shapes;
+
+namespace Mapeditor
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : DXRibbonWindow
+    {
+        private Rectangle _currentRecObj = new Rectangle();
+        private Rectangle _clickRecObj;
+        private Image _currentImg = new Image();
+        private Image _clickImg;
+        private ImageInfo _imgInfo;
+        private RectangleInfo _recInfo;
+        private String _currentBGPath = string.Empty;
+        private double _currPosX;  // Current position X
+        private double _currPosY;  // Current position Y
+        private bool _isDraw = true; // is draw
+        private bool _isMove = false; // is move
+        private bool _isRecObj = false; //is rectangle object
+
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        /**
+         * 
+         * Description:
+         *  + Phuong thuc nay dung de load anh back ground len canvas
+         * 
+         */
+
+        private void btnLoadBG_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
+        {
+            var openFile = new OpenFileDialog() { Title = "Open Background", Multiselect = false, Filter = "Image file (.png) |*.png|All files (*.*)|*.*" };
+            var _Result = openFile.ShowDialog();
+            if (_Result == true)
+            {
+                if (openFile.CheckFileExists)
+                {
+                    _currentBGPath = openFile.FileName;
+                    var img = new ImageBrush() { ImageSource = new BitmapImage(new Uri(_currentBGPath, UriKind.RelativeOrAbsolute)), Stretch = Stretch.UniformToFill};
+                    cvMap.Background = img;
+                    cvMap.Height = img.ImageSource.Height;
+                    cvMap.Width = img.ImageSource.Width;
+                }
+            }
+        }
+
+        /**
+         * Description:
+         *      + get position of mouse
+         * @Param sender
+         * @Param e
+         */ 
+        private void cvMap_MouseMove(object sender, MouseEventArgs e)
+        {
+            _currPosX = e.GetPosition(cvMap).X; //set value of current position X
+            _currPosY = e.GetPosition(cvMap).Y; //set value of current position X
+            txtPosX.Text = _currPosX.ToString();
+            txtPosY.Text = _currPosY.ToString();
+            //draw image with possition of mouse
+            if (_currentImg != null)
+            {
+                //if canvas contain object image then move positon
+                if (cvMap.Children.Contains(_currentImg))
+                {
+                    Canvas.SetLeft(_currentImg, _currPosX);
+                    Canvas.SetTop(_currentImg, _currPosY);
+                }
+                else
+                {
+                    cvMap.Children.Add(_currentImg);
+                    Canvas.SetLeft(_currentImg, _currPosX);
+                    Canvas.SetTop(_currentImg, _currPosY);
+                }
+            }
+            //move image
+            if (_isMove)
+            {
+                if (_isRecObj)
+                {
+                    this.drawRectangleToCanvas(_clickRecObj, _currPosX, _currPosY);
+                    //this._isMove = false;
+                    this._isDraw = true;
+                }
+                else
+                {
+                    this.drawImageToCanvas(_clickImg, _currPosX, _currPosY);
+                    //this._isMove = false;
+                    this._isDraw = true;
+                }
+            }
+        }
+
+        /**
+         * @Param: sender
+         * @Param: e
+         * Desciption:
+         *  + Get Image source
+         * return
+         */
+        private void imageItem_Click(object sender, EventArgs e)
+        {
+            var glItem = sender as DevExpress.Xpf.Bars.GalleryItem;
+            if (glItem.Tag != null)
+            {
+                _currentImg.Source = glItem.Glyph;
+                _currentImg.Tag = glItem.Tag;
+                _isRecObj = false;
+            }
+            
+        }
+
+        /**
+         * Description:
+         *      + draw image to canvas at posX, posY
+         * @Param: image
+         * @Param: posX
+         * @Param: posY
+         * Return 
+         */ 
+        private void drawImageToCanvas(Image image, double posX, double posY)
+        {
+            if (image != null)
+            {
+                //if canvas contain object image then move positon
+                if (cvMap.Children.Contains(image))
+                {
+                    //create info of image
+                    _imgInfo = image.Tag as ImageInfo;
+                    string imgID = _imgInfo.imgID;
+                    double posCenterX = posX + image.Source.Width / 2;
+                    double posCenterY = cvMap.Height - posY - image.Source.Height / 2;
+                    _imgInfo = new ImageInfo(imgID, posCenterX, posCenterY, image.Source.Height, image.Source.Width);
+                    image.Tag = _imgInfo;
+
+                    //update posotion
+                    Canvas.SetLeft(image, posX);
+                    Canvas.SetTop(image, posY);
+                }
+                else
+                {
+                    string imgID = image.Tag.ToString();
+                    double posCenterX = posX + image.Source.Width / 2;
+                    double posCenterY = cvMap.Height - posY - image.Source.Height / 2;
+                    _imgInfo = new ImageInfo(imgID, posCenterX, posCenterY, image.Source.Height, image.Source.Width);
+                    image.Tag = _imgInfo;
+                    
+                    //
+                    cvMap.Children.Add(image);
+                    Canvas.SetLeft(image, posX);
+                    Canvas.SetTop(image, posY);
+                }
+            }
+        }
+
+        /**
+         * Description:
+         *  + create image
+         * 
+         */
+        private Image createImage(ImageSource imgSource)
+        {
+            if (imgSource != null)
+            {
+                // create image
+                Image img = new Image() { Source = imgSource };
+                img.MouseLeftButtonDown += new MouseButtonEventHandler(img_MouseLeftButtonDown);
+                img.PreviewMouseLeftButtonUp += new MouseButtonEventHandler(img_PreviewMouseLeftButtonUp);
+                img.MouseRightButtonDown += new MouseButtonEventHandler(img_MouseRightButtonDown);
+                return img;
+            }
+            return null;
+        }
+
+        /**
+         * Description:
+         *  + Delete image from canvas
+         */ 
+        void img_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image img = sender as Image;
+            if(cvMap.Children.Contains(img))
+            {
+                cvMap.Children.Remove(img);
+            }
+        }
+
+        void img_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            this._isMove = false;
+            this._isDraw = true;
+        }
+
+        void img_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this._isMove = true;
+            this._isDraw = false;
+            this._clickImg = sender as Image;
+        }
+
+        /**
+         * Desciption:
+         *      + draw image current to canvas
+         */ 
+        private void cvMap_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_isDraw)
+            {
+                if (_isRecObj)
+                {
+                    if (_currentRecObj != null)
+                    {
+
+                        // create image info 
+                        if (_currentRecObj.Tag != null) // Check id of image
+                        {
+                            // create image
+                            Rectangle rec = this.createRec(_currentRecObj.Tag.ToString());
+                            this.drawRectangleToCanvas(rec, _currPosX, _currPosY);
+                        }
+
+                    }
+                }
+                else
+                {
+                    if (_currentImg != null)
+                    {
+                        // create image
+                        Image img = this.createImage(_currentImg.Source);
+                        // create image info 
+                        if (_currentImg.Tag != null) // Check id of image
+                        {
+                            img.Tag = _currentImg.Tag;
+                            this.drawImageToCanvas(img, _currPosX, _currPosY);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        /**
+         * Description:
+         *    + Create new map
+         * 
+         */
+        private void newItem_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
+        {
+            this.cvMap.Children.Clear(); //remove all object
+            this.cvMap.Height = this.cvMap.Width = 0;
+        }
+
+        /**
+         * 
+         * 
+         */
+        private void saveAsItem_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
+        {
+            SaveFileDialog saveDlg = new SaveFileDialog() { DefaultExt = ".txt",
+                                                            Title = "Save Map", 
+                                                            Filter = "Text document (.txt) |*.txt |All files (*.*)|*.*" };
+            Nullable<bool> _Result = saveDlg.ShowDialog();
+            if (_Result == true)
+            {
+                if (saveDlg.CheckPathExists)
+                {
+                    writeObjectToFile(saveDlg.FileName);
+                }
+            }
+        }
+
+        /**
+         * 
+         * 
+         * 
+         */
+        private void writeObjectToFile(string filePath)
+        {
+            int count = 0;
+            //Delete current mock image
+            if (cvMap.Children.Contains(_currentImg))
+            {
+                cvMap.Children.Remove(_currentImg);
+            }
+
+            System.IO.TextWriter writeFile;
+            if (!System.IO.File.Exists(filePath))
+            {
+                writeFile = new System.IO.StreamWriter(filePath, true);
+            }
+            else
+            {
+                System.IO.File.Delete(filePath);
+                writeFile = new System.IO.StreamWriter(filePath, false);
+            }
+
+            int size = cvMap.Children.Count;
+            Image img;
+            ImageInfo imgInfo;
+            Rectangle rec;
+            RectangleInfo recInfo;
+
+            for (int i = 0; i < size; i++)
+            {
+                if (cvMap.Children[i] is Image)
+                { 
+                    img = cvMap.Children[i] as Image;
+                    imgInfo = img.Tag as ImageInfo;
+                    writeFile.WriteLine(String.Format("{0} {1} {2} {3} {4} {5}",new Object[]{ count,
+                                                                                          imgInfo.imgID, 
+                                                                                          (int)imgInfo.posX,
+                                                                                          (int)imgInfo.posY, 
+                                                                                          (int)imgInfo.height, 
+                                                                                          (int)imgInfo.width }));
+                    count++;
+                }
+                else if (cvMap.Children[i] is Rectangle)
+                {
+                    rec = cvMap.Children[i] as Rectangle;
+                    recInfo = rec.Tag as RectangleInfo;
+                    writeFile.WriteLine(String.Format("{0} {1} {2} {3} {4} {5}", new Object[]{ count,
+                                                                                          recInfo.recID, 
+                                                                                          (int)recInfo.posX,
+                                                                                          (int)recInfo.posY, 
+                                                                                          (int)recInfo.height, 
+                                                                                          (int)recInfo.width }));
+                    count++;
+                }
+            }
+            writeFile.Close();
+            writeFile.Dispose();
+        }
+
+        /**
+         * Description:
+         *      + draw rectangle to canvas at posX, posY
+         * @Param: rectangle
+         * @Param: posX
+         * @Param: posY
+         * Return 
+         */
+        private void drawRectangleToCanvas(Rectangle rec, double posX, double posY)
+        {
+            if (rec != null)
+            {
+                //if canvas contain object image then move positon
+                if (cvMap.Children.Contains(rec))
+                {
+                    //create info of image
+                    _recInfo = rec.Tag as RectangleInfo;
+                    string recID = _recInfo.recID;
+                    double posCenterX = posX + rec.Width / 2;
+                    double posCenterY = cvMap.Height - posY - rec.Height / 2;
+                    _recInfo = new RectangleInfo(recID, posCenterX, posCenterY, rec.Height, rec.Width);
+                    rec.Tag = _recInfo;
+
+                    //update posotion
+                    Canvas.SetLeft(rec, posX);
+                    Canvas.SetTop(rec, posY);
+                }
+                else
+                {
+                    string recID = rec.Tag.ToString();
+                    double posCenterX = posX + rec.Width / 2;
+                    double posCenterY = cvMap.Height - posY - rec.Height / 2;
+                    _recInfo = new RectangleInfo(recID, posCenterX, posCenterY, rec.Height, rec.Width);
+                    rec.Tag = _recInfo;
+
+                    //
+                    cvMap.Children.Add(rec);
+                    Canvas.SetLeft(rec, posX);
+                    Canvas.SetTop(rec, posY);
+                }
+            }
+        }
+
+        /**
+         * Description:
+         *  + create rectangle
+         * 
+         */
+        private int _temp = 16;
+        private int _tileSize = 32;
+        private Rectangle createRec(String recID)
+        {
+            if (!String.IsNullOrEmpty(recID))
+            {
+                // create image
+                Rectangle rec = new Rectangle() { Height = _tileSize, Width = _tileSize, Tag = recID, Stroke = Brushes.White, Fill = new SolidColorBrush(), StrokeThickness = 2 };
+                rec.MouseLeftButtonDown += new MouseButtonEventHandler(rec_MouseLeftButtonDown);
+                rec.PreviewMouseLeftButtonUp += new MouseButtonEventHandler(rec_PreviewMouseLeftButtonUp);
+                rec.MouseRightButtonDown += new MouseButtonEventHandler(rec_MouseRightButtonDown);
+                rec.MouseMove += new MouseEventHandler(rec_MouseMove);
+                return rec;
+            }
+            return null;
+        }
+
+        void rec_MouseMove(object sender, MouseEventArgs e)
+        {
+            Rectangle box = new Rectangle();
+            Rectangle rec = sender as Rectangle;
+        }
+
+        void rec_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Rectangle rec = sender as Rectangle;
+            if (cvMap.Children.Contains(rec))
+            {
+                cvMap.Children.Remove(rec);
+            }
+        }
+
+        void rec_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            this._isMove = false;
+            this._isDraw = true;
+            this._isRecObj = false;
+            
+        }
+
+        void rec_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this._isMove = true;
+            this._isDraw = false;
+            this._isRecObj = true;
+            this._clickRecObj = sender as Rectangle;
+
+        }
+
+        private void HideObjectItem_Click(object sender, EventArgs e)
+        {
+            var glItem = sender as DevExpress.Xpf.Bars.GalleryItem;
+            if (glItem.Tag != null)
+            {
+                _isRecObj = true;
+                _currentRecObj.Tag = glItem.Tag;
+            }
+        }
+
+        /**
+         * Description:
+         *  + create info of image 
+         * 
+         */ 
+        class ImageInfo
+        {
+            public string imgID;
+            public double posX;
+            public double posY;
+            public double height;
+            public double width;
+
+            public ImageInfo(string imgID, double posX, double posY, double height, double width)
+            {
+                this.imgID = imgID;
+                this.posX = posX;
+                this.posY = posY;
+                this.height = height;
+                this.width = width;
+            }
+
+            public ImageInfo()
+            {
+
+            }
+        };
+
+        /**
+         * Description:
+         *  + create info of rectangle 
+         * 
+         */ 
+        class RectangleInfo
+        {
+            public string recID;
+            public double posX;
+            public double posY;
+            public double height;
+            public double width;
+
+            public RectangleInfo(string recID, double posX, double posY, double height, double width)
+            {
+                this.recID = recID;
+                this.posX = posX;
+                this.posY = posY;
+                this.height = height;
+                this.width = width;
+            }
+
+            public RectangleInfo()
+            {
+
+            }
+        };
+
+        private void DXRibbonWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (this._clickRecObj != null)
+            {
+                int posY = (int)Canvas.GetTop(this._clickRecObj);
+                int posX = (int)Canvas.GetLeft(this._clickRecObj);
+                if (e.Key == Key.Left)
+                {
+                    if (this._clickRecObj.Width > _temp)
+                    {
+                        this._clickRecObj.Width -= _temp;
+                    }
+                }
+                else if (e.Key == Key.Right)
+                {
+                    if (posX + this._clickRecObj.Width < this.cvMap.Width)
+                    {
+                        this._clickRecObj.Width += _temp;
+                    }
+                }
+                else if (e.Key == Key.Up)
+                {
+                    if (this._clickRecObj.Height > _temp)
+                    {
+                        this._clickRecObj.Height -= _temp;
+                    }
+                }
+                else if (e.Key == Key.Down)
+                {
+                    if (posY + this._clickRecObj.Height < (int)this.cvMap.Height)        
+                    {
+                        this._clickRecObj.Height += _temp;
+                    }
+                }
+
+                _recInfo = _clickRecObj.Tag as RectangleInfo;
+                string recID = _recInfo.recID;
+                double posCenterX = posX + _clickRecObj.Width / 2;
+                double posCenterY = cvMap.Height - posY - _clickRecObj.Height / 2;
+                _recInfo = new RectangleInfo(recID, posCenterX, posCenterY, _clickRecObj.Height, _clickRecObj.Width);
+                _clickRecObj.Tag = _recInfo;
+            }
+
+        }
+    }
+}
