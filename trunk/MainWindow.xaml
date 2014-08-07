@@ -1,0 +1,169 @@
+﻿<dxr:DXRibbonWindow x:Class="Mapeditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+        Title="Mapeditor" Height="450" Width="725" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" KeyDown="DXRibbonWindow_KeyDown">
+    <Grid>
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarButtonItem x:Name="newItem" Content="New" Glyph="Images\New_16x16.png" LargeGlyph="Images\New_32x32.png" ItemClick="newItem_ItemClick"/>
+                <dxb:BarButtonItem x:Name="saveAsItem" Content="Save As" LargeGlyph="Images\SaveAs_32x32.png" ItemClick="saveAsItem_ItemClick"/>
+                <dxb:BarButtonItem x:Name="printItem" Content="Print" Glyph="Images\Print_16x16.png"/>
+                <dxb:BarEditItem x:Name="editItem" EditSettings="{dxe:ComboBoxSettings}" EditWidth="80"/>
+                <dxb:BarButtonItem Content="Open" Name="openItem" RibbonStyle="All"/>
+                <dxb:BarSplitCheckItem Content="Boss" Name="sbtnStaticObj" RibbonStyle="All">
+                    <dxb:BarSplitCheckItem.PopupControl>
+                        <dxr:GalleryDropDownPopupMenu InitialVisibleColCount="5">
+                            <dxr:GalleryDropDownPopupMenu.Gallery>
+                                <dxb:Gallery ColCount="5" MinColCount="2" RowCount="2" ItemGlyphSize ="50,50" ItemSize="50,50"  IsGroupCaptionVisible="False" AllowFilter="False" IsItemCaptionVisible="False" IsItemDescriptionVisible="False"
+                                         ItemCheckMode="None">
+                                    <dxb:Gallery.Groups>
+                                        <dxb:GalleryItemGroup>
+                                            <dxb:GalleryItemGroup.Items>
+                                                <dxb:GalleryItem Tag="401" Glyph="/Mapeditor;component/Images/boss/401.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="402" Glyph="/Mapeditor;component/Images/boss/402.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="403" Glyph="/Mapeditor;component/Images/boss/403.png" Click="imageItem_Click"/>
+                                            </dxb:GalleryItemGroup.Items>
+                                        </dxb:GalleryItemGroup>
+                                    </dxb:Gallery.Groups>
+                                </dxb:Gallery>
+                            </dxr:GalleryDropDownPopupMenu.Gallery>
+                        </dxr:GalleryDropDownPopupMenu>
+                    </dxb:BarSplitCheckItem.PopupControl>
+                </dxb:BarSplitCheckItem>
+                <dxb:BarSplitCheckItem Content="Enemy" Name="sbtnDynamicObj" RibbonStyle="All" GlyphSize="Large" OverridesDefaultStyle="True" BarItemDisplayMode="ContentAndGlyph" >
+                    <dxb:BarSplitCheckItem.PopupControl>
+                        <dxr:GalleryDropDownPopupMenu x:Name="pmBackGround" InitialVisibleColCount="5">
+                            <dxr:GalleryDropDownPopupMenu.Gallery>
+                                <dxb:Gallery x:Name="gBackGround" ColCount="5" MinColCount="2" RowCount="2" ItemGlyphSize ="50,50" ItemSize="50,50"  IsGroupCaptionVisible="False" AllowFilter="False" IsItemCaptionVisible="False" IsItemDescriptionVisible="False"
+                                         ItemCheckMode="None">
+                                    <dxb:Gallery.Groups>
+                                        <dxb:GalleryItemGroup>
+                                            <dxb:GalleryItemGroup.Items>
+                                                <dxb:GalleryItem Tag="201" Glyph="/Mapeditor;component/Images/enemy/201.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="202" Glyph="/Mapeditor;component/Images/enemy/202.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="203" Glyph="/Mapeditor;component/Images/enemy/203.gif" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="204" Glyph="/Mapeditor;component/Images/enemy/204.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="205" Glyph="/Mapeditor;component/Images/enemy/205.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="206" Glyph="/Mapeditor;component/Images/enemy/206.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="207" Glyph="/Mapeditor;component/Images/enemy/207.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="208" Glyph="/Mapeditor;component/Images/enemy/208.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="209" Glyph="/Mapeditor;component/Images/enemy/209.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="210" Glyph="/Mapeditor;component/Images/enemy/210.png" Click="imageItem_Click"/>
+                                            </dxb:GalleryItemGroup.Items>
+                                        </dxb:GalleryItemGroup>
+                                    </dxb:Gallery.Groups>
+                                </dxb:Gallery>
+                            </dxr:GalleryDropDownPopupMenu.Gallery>
+                        </dxr:GalleryDropDownPopupMenu>
+                    </dxb:BarSplitCheckItem.PopupControl>
+                </dxb:BarSplitCheckItem>
+                <dxb:BarButtonItem Content="Load BackGround" Name="btnLoadBG" RibbonStyle="All" GlyphSize="Large" ItemClick="btnLoadBG_ItemClick" Glyph="/Mapeditor;component/Images/HideObject/Ground.png" />
+                <dxb:BarSplitCheckItem Content="Ground" Name="sbtnGround" RibbonStyle="All" GlyphSize="Large" >
+                    <dxb:BarSplitCheckItem.PopupControl>
+                        <dxr:GalleryDropDownPopupMenu InitialVisibleColCount="5">
+                            <dxr:GalleryDropDownPopupMenu.Gallery>
+                                <dxb:Gallery ColCount="5" MinColCount="2" RowCount="2" ItemGlyphSize ="50,50" ItemSize="50,50"  IsGroupCaptionVisible="False" AllowFilter="False" IsItemCaptionVisible="False" IsItemDescriptionVisible="False"
+                                         ItemCheckMode="None">
+                                    <dxb:Gallery.Groups>
+                                        <dxb:GalleryItemGroup>
+                                            <dxb:GalleryItemGroup.Items>
+                                                <dxb:GalleryItem Tag="604" Glyph="/Mapeditor;component/Images/ground/604.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="605" Glyph="/Mapeditor;component/Images/ground/605.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="606" Glyph="/Mapeditor;component/Images/ground/606.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="607" Glyph="/Mapeditor;component/Images/ground/607.png" Click="imageItem_Click"/>
+                                            </dxb:GalleryItemGroup.Items>
+                                        </dxb:GalleryItemGroup>
+                                    </dxb:Gallery.Groups>
+                                </dxb:Gallery>
+                            </dxr:GalleryDropDownPopupMenu.Gallery>
+                        </dxr:GalleryDropDownPopupMenu>
+                    </dxb:BarSplitCheckItem.PopupControl>
+                </dxb:BarSplitCheckItem>
+                <dxb:BarSplitCheckItem Content="Hide Object" Name="sbtnHideObj" RibbonStyle="All" GlyphSize="Large">
+                    <dxb:BarSplitCheckItem.PopupControl>
+                        <dxr:GalleryDropDownPopupMenu InitialVisibleColCount="5">
+                            <dxr:GalleryDropDownPopupMenu.Gallery>
+                                <dxb:Gallery ColCount="5" MinColCount="2" RowCount="2" ItemGlyphSize ="32,32" ItemSize="32,32"  IsGroupCaptionVisible="False" AllowFilter="False" IsItemCaptionVisible="False" IsItemDescriptionVisible="False"
+                                         ItemCheckMode="None">
+                                    <dxb:Gallery.Groups>
+                                        <dxb:GalleryItemGroup>
+                                            <dxb:GalleryItemGroup.Items>
+                                                <dxb:GalleryItem Tag="701" Glyph="/Mapeditor;component/Images/HideObject/Free.png" Click="HideObjectItem_Click"/>
+                                                <dxb:GalleryItem Tag="702" Glyph="/Mapeditor;component/Images/HideObject/Ground.png" Click="HideObjectItem_Click"/>
+                                                <dxb:GalleryItem Tag="703" Glyph="/Mapeditor;component/Images/HideObject/StairDown.png" Click="HideObjectItem_Click"/>
+                                                <dxb:GalleryItem Tag="704" Glyph="/Mapeditor;component/Images/HideObject/StairUp.png" Click="HideObjectItem_Click"/>
+                                                <dxb:GalleryItem Tag="705" Glyph="/Mapeditor;component/Images/HideObject/ChangeSence.png" Click="HideObjectItem_Click"/>
+                                            </dxb:GalleryItemGroup.Items>
+                                        </dxb:GalleryItemGroup>
+                                    </dxb:Gallery.Groups>
+                                </dxb:Gallery>
+                            </dxr:GalleryDropDownPopupMenu.Gallery>
+                        </dxr:GalleryDropDownPopupMenu>
+                    </dxb:BarSplitCheckItem.PopupControl>
+                </dxb:BarSplitCheckItem>
+            </dxb:BarManager.Items>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="432*" />
+                    <ColumnDefinition Width="271*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <dxr:RibbonControl RibbonStyle="Office2007" Grid.ColumnSpan="2">
+                    <dxr:RibbonControl.ToolbarItemLinks>
+                        <dxb:BarButtonItemLink BarItemName="newItem"/>
+                    </dxr:RibbonControl.ToolbarItemLinks>
+                    <dxr:RibbonDefaultPageCategory>
+                        <dxr:RibbonPage Caption="Home">
+                            <dxr:RibbonPageGroup Caption="File">
+                                <dxb:BarButtonItemLink BarItemName="newItem" RibbonStyle="Large"/>
+                                <dxb:BarItemLinkSeparator/>
+                                <dxb:BarItemLinkSeparator/>
+                                <dxb:BarButtonItemLink BarItemName="saveAsItem" RibbonStyle="Large"/>
+                                <dxb:BarButtonItemLink BarItemName="openItem" />
+                                <dxb:BarButtonItemLink BarItemName="btnLoadBG" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                        <dxr:RibbonPage Caption="Draw">
+                            <dxr:RibbonPageGroup Caption="Static Object">
+                                <dxb:BarSplitCheckItemLink BarItemName="sbtnStaticObj" />
+                                <dxb:BarSplitCheckItemLink BarItemName="sbtnDynamicObj" />
+                                <dxb:BarSplitCheckItemLink BarItemName="sbtnGround" />
+                                <dxb:BarSplitCheckItemLink BarItemName="sbtnHideObj" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl Grid.Row="2" Grid.ColumnSpan="2">
+                    <dxr:RibbonStatusBarControl.RightItemLinks>
+                    </dxr:RibbonStatusBarControl.RightItemLinks>
+                </dxr:RibbonStatusBarControl>
+            </Grid>
+        </dxb:BarManager>
+        <Grid Margin="0,156,0,24">
+            <DockPanel>
+                <Grid DockPanel.Dock="Left" Width="220">
+                        <Canvas Height="Auto">
+                            <dxe:TextEdit Name="txtPosX" Width="128" Canvas.Left="68" Canvas.Top="31"/>
+                            <dxe:TextEdit Name="txtPosY" Width="126" Canvas.Left="69" Canvas.Top="68"/>
+                        <TextBlock Canvas.Left="6" Canvas.Top="32" Height="23" Text="Position X:" />
+                        <TextBlock Canvas.Left="6" Canvas.Top="69" Height="23" Text="Position Y:" />
+                    </Canvas>
+                </Grid>
+                <Grid DockPanel.Dock="Right">
+                    <dxlc:ScrollBox  Name="scrbParent" DragScrolling="False" AnimateScrolling="False" Background="AliceBlue">
+                        <Canvas Height="Auto" Name="cvMap" Width="Auto" MouseMove="cvMap_MouseMove" MouseLeftButtonDown="cvMap_MouseLeftButtonDown"></Canvas>
+                    </dxlc:ScrollBox>
+                </Grid>
+            </DockPanel>
+
+        </Grid>
+    </Grid>
+</dxr:DXRibbonWindow>
