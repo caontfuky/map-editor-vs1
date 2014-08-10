@@ -8,6 +8,9 @@ using System.Windows.Media.Imaging;
 using DevExpress.Xpf.Ribbon;
 using Microsoft.Win32;
 using System.Windows.Shapes;
+using System.Text;
+using System.IO;
+using System.Reflection;
 
 namespace Mapeditor
 {
@@ -279,7 +282,7 @@ namespace Mapeditor
         {
             SaveFileDialog saveDlg = new SaveFileDialog() { DefaultExt = ".csv",
                                                             Title = "Save Map", 
-                                                            Filter = "Text document (.csv) |*.csv |All files (*.*)|*.*" };
+                                                            Filter = "Data document (.csv) |*.csv |All files (*.*)|*.*" };
             Nullable<bool> _Result = saveDlg.ShowDialog();
             if (_Result == true)
             {
@@ -287,7 +290,7 @@ namespace Mapeditor
                 {
                     string filePath = saveDlg.FileName;
                     writeObjectToFile(filePath);
-                    writeQuadTreeToFile(String.Format("{0}quadTree.txt", filePath.Substring(0, filePath.Length - 5)));
+                    writeQuadTreeToFile(String.Format("{0}quadTree.csv", filePath.Substring(0, filePath.Length - 5)));
                 }
             }
         }
@@ -329,7 +332,7 @@ namespace Mapeditor
                 { 
                     img = cvMap.Children[i] as Image;
                     imgInfo = img.Tag as ImageInfo;
-                    writeFile.WriteLine(String.Format("{0} {1} {2} {3} {4} {5}",new Object[]{ count,
+                    writeFile.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}]\t{4}\t{5}",new Object[]{ count,
                                                                                           imgInfo.imgID, 
                                                                                           (int)imgInfo.posX,
                                                                                           (int)imgInfo.posY, 
@@ -341,7 +344,7 @@ namespace Mapeditor
                 {
                     rec = cvMap.Children[i] as Rectangle;
                     recInfo = rec.Tag as RectangleInfo;
-                    writeFile.WriteLine(String.Format("{0} {1} {2} {3} {4} {5}", new Object[]{ count,
+                    writeFile.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", new Object[]{ count,
                                                                                           recInfo.recID, 
                                                                                           (int)recInfo.posX,
                                                                                           (int)recInfo.posY, 
@@ -675,5 +678,115 @@ namespace Mapeditor
                 this.cvMap.Children.Remove(_currentImg);
             }
         }
+
+        private Dictionary<String, String> listImagePath;
+        /**
+         * 
+         * 
+         */
+        private void getListImagePath()
+        {
+            String filePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), 
+                                                                                     @"File\Config.csv");
+            //String filePath = "pack://application:,,,/Mapeditor;component/File/Config.csv";
+            listImagePath = new Dictionary<string, string>();
+            System.IO.StreamReader readerFile = new System.IO.StreamReader(filePath);
+            String data;
+            String[] result;
+            String imgID;
+            String imgPath;
+            System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex("\t",
+                                              System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            readerFile.ReadLine();
+            while ((data = readerFile.ReadLine()) != null)
+            {
+                result = rgx.Split(data);
+                if (result.Length >= 2)
+                {
+                    imgID = result[0];
+                    imgPath = result[1];
+                    listImagePath.Add(imgID, imgPath);
+                }
+            }
+        }
+
+
+        /**
+         * Description:
+         *  + Open file
+         * 
+         */
+        private void openItem_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
+        {
+            
+            StringBuilder imagePath = null;
+            var openFile = new OpenFileDialog()
+            {
+                Title = "Open File Map",
+                Multiselect = false,
+                Filter = "Data file (.csv) |*.csv|All files (*.*)|*.*"
+            };
+            var _Result = openFile.ShowDialog();
+            if (_Result == true)
+            {
+                if (openFile.CheckFileExists)
+                {
+                    this.getListImagePath();
+                    imagePath = new StringBuilder(openFile.FileName);
+                    System.IO.StreamReader readerFile = new System.IO.StreamReader(imagePath.ToString());
+                    Image img;
+                    Rectangle rec;
+                    String data;
+                    String[] result;
+                    String iD;
+                    String imgPath;
+                    String imgID;
+                    int posCenterX;
+                    int posCenterY;
+                    int height;
+                    int width;
+                    System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex("\t",
+                                                      System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    //readerFile.ReadLine();
+                    while ((data = readerFile.ReadLine()) != null)
+                    {
+                        result = rgx.Split(data);
+                        if (result.Length >= 4)
+                        {
+                            iD = result[0];
+                            imgID = result[1];
+                            if (int.Parse(imgID.Trim()) > 700 && int.Parse(imgID.Trim()) <= 800)
+                            {
+                                posCenterX = int.Parse(result[2]);
+                                posCenterY = int.Parse(result[3]);
+                                height = int.Parse(result[4]);
+                                width = int.Parse(result[5]);
+                                rec = new Rectangle()
+                                {
+                                    Height = height,
+                                    Width = width,
+                                    Tag = imgID,
+                                    StrokeThickness = 2,
+                                    Stroke = Brushes.White,
+                                    Fill = new SolidColorBrush()
+                                };
+                                this.drawRectangleToCanvas(rec, posCenterX - rec.Width / 2, cvMap.Height - (rec.Height / 2 + posCenterY));
+                            }
+                            else
+                            {
+                                imgPath = listImagePath[imgID];
+                                img = this.createImage(new BitmapImage(new Uri(imgPath, UriKind.RelativeOrAbsolute)));
+                                img.Tag = imgID;
+                                posCenterX = int.Parse(result[2]);
+                                posCenterY = int.Parse(result[3]);
+                                this.drawImageToCanvas(img, posCenterX - img.Source.Width / 2, cvMap.Height - (img.Source.Height / 2 + posCenterY));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
     }
 }

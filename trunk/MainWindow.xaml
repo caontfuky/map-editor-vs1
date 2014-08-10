@@ -10,7 +10,7 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarButtonItem x:Name="newItem" Content="New" Glyph="Images\New_16x16.png" LargeGlyph="Images\New_32x32.png" ItemClick="newItem_ItemClick"/>
-                <dxb:BarButtonItem Content="Open" Name="openItem" RibbonStyle="All" Glyph="/Mapeditor;component/Images/open.png" />
+                <dxb:BarButtonItem Content="Open" Name="openItem" RibbonStyle="All" Glyph="/Mapeditor;component/Images/open.png" ItemClick="openItem_ItemClick" />
                 <dxb:BarButtonItem x:Name="saveAsItem" Content="Save As" LargeGlyph="Images\SaveAs_32x32.png" ItemClick="saveAsItem_ItemClick"/>
                 <dxb:BarEditItem x:Name="editItem" EditSettings="{dxe:ComboBoxSettings}" EditWidth="80"/>
                 <dxb:BarSplitCheckItem Content="Boss" Name="sbtnStaticObj" RibbonStyle="All" Glyph="/Mapeditor;component/Images/boss.png">
