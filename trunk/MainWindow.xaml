@@ -10,11 +10,10 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarButtonItem x:Name="newItem" Content="New" Glyph="Images\New_16x16.png" LargeGlyph="Images\New_32x32.png" ItemClick="newItem_ItemClick"/>
+                <dxb:BarButtonItem Content="Open" Name="openItem" RibbonStyle="All" Glyph="/Mapeditor;component/Images/open.png" />
                 <dxb:BarButtonItem x:Name="saveAsItem" Content="Save As" LargeGlyph="Images\SaveAs_32x32.png" ItemClick="saveAsItem_ItemClick"/>
-                <dxb:BarButtonItem x:Name="printItem" Content="Print" Glyph="Images\Print_16x16.png"/>
                 <dxb:BarEditItem x:Name="editItem" EditSettings="{dxe:ComboBoxSettings}" EditWidth="80"/>
-                <dxb:BarButtonItem Content="Open" Name="openItem" RibbonStyle="All"/>
-                <dxb:BarSplitCheckItem Content="Boss" Name="sbtnStaticObj" RibbonStyle="All">
+                <dxb:BarSplitCheckItem Content="Boss" Name="sbtnStaticObj" RibbonStyle="All" Glyph="/Mapeditor;component/Images/boss.png">
                     <dxb:BarSplitCheckItem.PopupControl>
                         <dxr:GalleryDropDownPopupMenu InitialVisibleColCount="5">
                             <dxr:GalleryDropDownPopupMenu.Gallery>
@@ -34,7 +33,7 @@
                         </dxr:GalleryDropDownPopupMenu>
                     </dxb:BarSplitCheckItem.PopupControl>
                 </dxb:BarSplitCheckItem>
-                <dxb:BarSplitCheckItem Content="Enemy" Name="sbtnDynamicObj" RibbonStyle="All" GlyphSize="Large" OverridesDefaultStyle="True" BarItemDisplayMode="ContentAndGlyph" >
+                <dxb:BarSplitCheckItem Content="Enemy" Name="sbtnDynamicObj" RibbonStyle="All" GlyphSize="Large" OverridesDefaultStyle="True" BarItemDisplayMode="ContentAndGlyph" Glyph="/Mapeditor;component/Images/enemy/203.gif">
                     <dxb:BarSplitCheckItem.PopupControl>
                         <dxr:GalleryDropDownPopupMenu x:Name="pmBackGround" InitialVisibleColCount="5">
                             <dxr:GalleryDropDownPopupMenu.Gallery>
@@ -61,8 +60,8 @@
                         </dxr:GalleryDropDownPopupMenu>
                     </dxb:BarSplitCheckItem.PopupControl>
                 </dxb:BarSplitCheckItem>
-                <dxb:BarButtonItem Content="Load BackGround" Name="btnLoadBG" RibbonStyle="All" GlyphSize="Large" ItemClick="btnLoadBG_ItemClick" Glyph="/Mapeditor;component/Images/HideObject/Ground.png" />
-                <dxb:BarSplitCheckItem Content="Ground" Name="sbtnGround" RibbonStyle="All" GlyphSize="Large" >
+                <dxb:BarButtonItem Content="Load BackGround" Name="btnLoadBG" RibbonStyle="All" GlyphSize="Large" ItemClick="btnLoadBG_ItemClick" Glyph="/Mapeditor;component/Images/background.png" />
+                <dxb:BarSplitCheckItem Content="Ground" Name="sbtnGround" RibbonStyle="All" GlyphSize="Large" Glyph="/Mapeditor;component/Images/background.png">
                     <dxb:BarSplitCheckItem.PopupControl>
                         <dxr:GalleryDropDownPopupMenu InitialVisibleColCount="5">
                             <dxr:GalleryDropDownPopupMenu.Gallery>
@@ -83,7 +82,7 @@
                         </dxr:GalleryDropDownPopupMenu>
                     </dxb:BarSplitCheckItem.PopupControl>
                 </dxb:BarSplitCheckItem>
-                <dxb:BarSplitCheckItem Content="Hide Object" Name="sbtnHideObj" RibbonStyle="All" GlyphSize="Large">
+                <dxb:BarSplitCheckItem Content="Hide Object" Name="sbtnHideObj" RibbonStyle="All" GlyphSize="Large" Glyph="/Mapeditor;component/Images/hide.png">
                     <dxb:BarSplitCheckItem.PopupControl>
                         <dxr:GalleryDropDownPopupMenu InitialVisibleColCount="5">
                             <dxr:GalleryDropDownPopupMenu.Gallery>
@@ -97,6 +96,7 @@
                                                 <dxb:GalleryItem Tag="703" Glyph="/Mapeditor;component/Images/HideObject/StairDown.png" Click="HideObjectItem_Click"/>
                                                 <dxb:GalleryItem Tag="704" Glyph="/Mapeditor;component/Images/HideObject/StairUp.png" Click="HideObjectItem_Click"/>
                                                 <dxb:GalleryItem Tag="705" Glyph="/Mapeditor;component/Images/HideObject/ChangeSence.png" Click="HideObjectItem_Click"/>
+                                                <dxb:GalleryItem Tag="706" Glyph="/Mapeditor;component/Images/HideObject/StopScroll.png" Click="HideObjectItem_Click"/>
                                             </dxb:GalleryItemGroup.Items>
                                         </dxb:GalleryItemGroup>
                                     </dxb:Gallery.Groups>
@@ -126,9 +126,9 @@
                                 <dxb:BarButtonItemLink BarItemName="newItem" RibbonStyle="Large"/>
                                 <dxb:BarItemLinkSeparator/>
                                 <dxb:BarItemLinkSeparator/>
-                                <dxb:BarButtonItemLink BarItemName="saveAsItem" RibbonStyle="Large"/>
-                                <dxb:BarButtonItemLink BarItemName="openItem" />
+                                <dxb:BarButtonItemLink BarItemName="openItem" RibbonStyle="Large"/>
                                 <dxb:BarButtonItemLink BarItemName="btnLoadBG" />
+                                <dxb:BarButtonItemLink BarItemName="saveAsItem" RibbonStyle="Large"/>
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                         <dxr:RibbonPage Caption="Draw">
@@ -159,7 +159,7 @@
                 </Grid>
                 <Grid DockPanel.Dock="Right">
                     <dxlc:ScrollBox  Name="scrbParent" DragScrolling="False" AnimateScrolling="False" Background="AliceBlue">
-                        <Canvas Height="Auto" Name="cvMap" Width="Auto" MouseMove="cvMap_MouseMove" MouseLeftButtonDown="cvMap_MouseLeftButtonDown"></Canvas>
+                        <Canvas Height="Auto" Name="cvMap" Width="Auto" MouseMove="cvMap_MouseMove" MouseLeftButtonDown="cvMap_MouseLeftButtonDown" MouseLeave="cvMap_MouseLeave"></Canvas>
                     </dxlc:ScrollBox>
                 </Grid>
             </DockPanel>

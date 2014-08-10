@@ -70,25 +70,13 @@ namespace Mapeditor
             _currPosY = e.GetPosition(cvMap).Y; //set value of current position X
             txtPosX.Text = _currPosX.ToString();
             txtPosY.Text = _currPosY.ToString();
-            //draw image with possition of mouse
-            if (_currentImg != null)
-            {
-                //if canvas contain object image then move positon
-                if (cvMap.Children.Contains(_currentImg))
-                {
-                    Canvas.SetLeft(_currentImg, _currPosX);
-                    Canvas.SetTop(_currentImg, _currPosY);
-                }
-                else
-                {
-                    cvMap.Children.Add(_currentImg);
-                    Canvas.SetLeft(_currentImg, _currPosX);
-                    Canvas.SetTop(_currentImg, _currPosY);
-                }
-            }
             //move image
             if (_isMove)
             {
+                if (cvMap.Children.Contains(_currentImg))
+                {
+                    cvMap.Children.Remove(_currentImg);
+                }
                 if (_isRecObj)
                 {
                     this.drawRectangleToCanvas(_clickRecObj, _currPosX, _currPosY);
@@ -100,6 +88,25 @@ namespace Mapeditor
                     this.drawImageToCanvas(_clickImg, _currPosX, _currPosY);
                     //this._isMove = false;
                     this._isDraw = true;
+                }
+            }
+            else
+            {
+                //draw image with possition of mouse
+                if (_currentImg.Source != null && !_isRecObj)
+                {
+                    //if canvas contain object image then move positon
+                    if (cvMap.Children.Contains(_currentImg))
+                    {
+                        Canvas.SetLeft(_currentImg, _currPosX + 5);
+                        Canvas.SetTop(_currentImg, _currPosY + 5);
+                    }
+                    else
+                    {
+                        cvMap.Children.Add(_currentImg);
+                        Canvas.SetLeft(_currentImg, _currPosX + 5);
+                        Canvas.SetTop(_currentImg, _currPosY + 5);
+                    }
                 }
             }
         }
@@ -208,6 +215,7 @@ namespace Mapeditor
         {
             this._isMove = true;
             this._isDraw = false;
+            this._isRecObj = false;
             this._clickImg = sender as Image;
         }
 
@@ -269,15 +277,17 @@ namespace Mapeditor
          */
         private void saveAsItem_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
         {
-            SaveFileDialog saveDlg = new SaveFileDialog() { DefaultExt = ".txt",
+            SaveFileDialog saveDlg = new SaveFileDialog() { DefaultExt = ".csv",
                                                             Title = "Save Map", 
-                                                            Filter = "Text document (.txt) |*.txt |All files (*.*)|*.*" };
+                                                            Filter = "Text document (.csv) |*.csv |All files (*.*)|*.*" };
             Nullable<bool> _Result = saveDlg.ShowDialog();
             if (_Result == true)
             {
                 if (saveDlg.CheckPathExists)
                 {
-                    writeObjectToFile(saveDlg.FileName);
+                    string filePath = saveDlg.FileName;
+                    writeObjectToFile(filePath);
+                    writeQuadTreeToFile(String.Format("{0}quadTree.txt", filePath.Substring(0, filePath.Length - 5)));
                 }
             }
         }
@@ -399,7 +409,12 @@ namespace Mapeditor
             if (!String.IsNullOrEmpty(recID))
             {
                 // create image
-                Rectangle rec = new Rectangle() { Height = _tileSize, Width = _tileSize, Tag = recID, Stroke = Brushes.White, Fill = new SolidColorBrush(), StrokeThickness = 2 };
+                Rectangle rec = new Rectangle() { Height = _tileSize,
+                                                  Width = _tileSize, 
+                                                  Tag = recID, 
+                                                  Stroke = Brushes.White, 
+                                                  Fill = new SolidColorBrush(), 
+                                                  StrokeThickness = 2 };
                 rec.MouseLeftButtonDown += new MouseButtonEventHandler(rec_MouseLeftButtonDown);
                 rec.PreviewMouseLeftButtonUp += new MouseButtonEventHandler(rec_PreviewMouseLeftButtonUp);
                 rec.MouseRightButtonDown += new MouseButtonEventHandler(rec_MouseRightButtonDown);
@@ -428,7 +443,7 @@ namespace Mapeditor
         {
             this._isMove = false;
             this._isDraw = true;
-            this._isRecObj = false;
+            //this._isRecObj = false;
             
         }
 
@@ -550,6 +565,115 @@ namespace Mapeditor
                 _clickRecObj.Tag = _recInfo;
             }
 
+        }
+
+        /**
+         * Description:
+         *  + Create list game object
+         * 
+         */
+        private List<GameObject> getListGameObject()
+        {
+            if (cvMap.Children.Contains(_currentImg))
+            {
+                cvMap.Children.Remove(_currentImg);
+            }
+            int count = 0;
+            int size = cvMap.Children.Count;
+            Image img;
+            ImageInfo imgInfo;
+            Rectangle rec;
+            RectangleInfo recInfo;
+            GameObject obj;
+            List<GameObject> result = new List<GameObject>();
+            for (int i = 0; i < size; i++)
+            {
+                if (cvMap.Children[i] is Image)
+                {
+                    img = cvMap.Children[i] as Image;
+                    imgInfo = img.Tag as ImageInfo;
+                    obj = new GameObject(count,
+                                         new System.Drawing.Rectangle((int)imgInfo.posX - (int)imgInfo.width / 2,
+                                                                     (int)imgInfo.posY + (int)imgInfo.height / 2, 
+                                                                     (int)imgInfo.width, 
+                                                                     (int)imgInfo.height), 
+                                         imgInfo.imgID);
+                    result.Add(obj);
+                    count++;
+                }
+                else if (cvMap.Children[i] is Rectangle)
+                {
+                    rec = cvMap.Children[i] as Rectangle;
+                    recInfo = rec.Tag as RectangleInfo;
+                    obj = new GameObject(count,
+                                         new System.Drawing.Rectangle((int)recInfo.posX - (int)recInfo.width / 2,
+                                                                     (int)recInfo.posY + (int)recInfo.height / 2, 
+                                                                     (int)recInfo.width, 
+                                                                     (int)recInfo.height), 
+                                         recInfo.recID);
+                    result.Add(obj);
+                    count++;
+                }
+            }
+            return result;
+        }
+
+        /**
+         * Description: 
+         *     +  build quatree
+         * 
+         */
+        private QuadTree _quadTreeRoot;
+        private List<System.Text.StringBuilder> buildQuadTree()
+        {
+            double maxSize = (this.cvMap.Height > this.cvMap.Width) ? this.cvMap.Height : this.cvMap.Width; //get max size
+            System.Drawing.Rectangle recRoot = new System.Drawing.Rectangle(0, 0, (int)maxSize, (int)maxSize); //create rectangle
+            List<GameObject> listObject = this.getListGameObject(); // get list object of mapeditor
+            this._quadTreeRoot = new QuadTree(recRoot); // create node root
+            this._quadTreeRoot.buildQuadTree(listObject); // build quatree
+            List<System.Text.StringBuilder> listQuadNode = new List<System.Text.StringBuilder>();
+            this._quadTreeRoot.export(_quadTreeRoot._root, listQuadNode);
+            return listQuadNode;
+        }
+
+        /**
+         * 
+         */
+        private void writeQuadTreeToFile(string filePath)
+        {
+            System.IO.TextWriter writeFile;
+            if (!System.IO.File.Exists(filePath))
+            {
+                writeFile = new System.IO.StreamWriter(filePath, true);
+            }
+            else
+            {
+                System.IO.File.Delete(filePath);
+                writeFile = new System.IO.StreamWriter(filePath, false);
+            }
+
+            List<System.Text.StringBuilder> listQuadNode = this.buildQuadTree();
+            int size = listQuadNode.Count;
+
+            for (int i = 0; i < size; i++)
+            {
+                writeFile.WriteLine(listQuadNode[i]); 
+                                  
+            }
+            writeFile.Close();
+            writeFile.Dispose();
+        }
+
+        /**
+         * Description:
+         *     + If mouse leave cvMap then delete currentImage
+         */
+        private void cvMap_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (this.cvMap.Children.Contains(_currentImg))
+            {
+                this.cvMap.Children.Remove(_currentImg);
+            }
         }
     }
 }
