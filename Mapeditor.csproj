@@ -53,6 +53,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -70,6 +71,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="QuadNode.cs" />
+    <Compile Include="QuadTree.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -115,7 +118,6 @@
     <Resource Include="Images\HideObject\StairUp.png" />
     <Resource Include="Images\New_16x16.png" />
     <Resource Include="Images\New_32x32.png" />
-    <Resource Include="Images\Print_16x16.png" />
     <Resource Include="Images\SaveAs_32x32.png" />
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +148,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\enemy\203.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\HideObject\StopScroll.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\background.png" />
+    <Resource Include="Images\boss.png" />
+    <Resource Include="Images\enemy_territory_quake_wars.png" />
+    <Resource Include="Images\hide.png" />
+    <Resource Include="Images\open.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
