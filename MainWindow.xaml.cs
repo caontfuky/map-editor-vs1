@@ -332,7 +332,7 @@ namespace Mapeditor
                 { 
                     img = cvMap.Children[i] as Image;
                     imgInfo = img.Tag as ImageInfo;
-                    writeFile.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}]\t{4}\t{5}",new Object[]{ count,
+                    writeFile.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}",new Object[]{ count,
                                                                                           imgInfo.imgID, 
                                                                                           (int)imgInfo.posX,
                                                                                           (int)imgInfo.posY, 
