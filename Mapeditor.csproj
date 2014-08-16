@@ -142,7 +142,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\ground\604.png" />
-    <Resource Include="Images\ground\605.png" />
     <Resource Include="Images\ground\606.png" />
     <Resource Include="Images\ground\607.png" />
   </ItemGroup>
@@ -162,7 +161,22 @@
     <Resource Include="Images\hide.png" />
     <Resource Include="Images\open.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\ground\601.png" />
+    <Resource Include="Images\ground\602.png" />
+    <Resource Include="Images\ground\603.png" />
+    <Resource Include="Images\ground\611.png" />
+    <Resource Include="Images\ground\612.png" />
+    <Resource Include="Images\ground\613.png" />
+    <Resource Include="Images\ground\614.png" />
+    <Resource Include="Images\ground\615.png" />
+    <Resource Include="Images\ground\616.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\HideObject\BoundScene.png" />
+    <Resource Include="Images\HideObject\StairDownRight.png" />
+    <Resource Include="Images\HideObject\StairUpRight.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

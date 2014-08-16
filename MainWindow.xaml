@@ -70,10 +70,18 @@
                                     <dxb:Gallery.Groups>
                                         <dxb:GalleryItemGroup>
                                             <dxb:GalleryItemGroup.Items>
-                                                <dxb:GalleryItem Tag="604" Glyph="/Mapeditor;component/Images/ground/604.png" Click="imageItem_Click"/>
-                                                <dxb:GalleryItem Tag="605" Glyph="/Mapeditor;component/Images/ground/605.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="601" Glyph="/Mapeditor;component/Images/ground/601.png" Click="imageItem_Click"/>
+												<dxb:GalleryItem Tag="602" Glyph="/Mapeditor;component/Images/ground/602.png" Click="imageItem_Click"/>
+												<dxb:GalleryItem Tag="603" Glyph="/Mapeditor;component/Images/ground/603.png" Click="imageItem_Click"/>
+												<dxb:GalleryItem Tag="604" Glyph="/Mapeditor;component/Images/ground/604.png" Click="imageItem_Click"/>
                                                 <dxb:GalleryItem Tag="606" Glyph="/Mapeditor;component/Images/ground/606.png" Click="imageItem_Click"/>
                                                 <dxb:GalleryItem Tag="607" Glyph="/Mapeditor;component/Images/ground/607.png" Click="imageItem_Click"/>
+                                                <dxb:GalleryItem Tag="611" Glyph="/Mapeditor;component/Images/ground/611.png" Click="imageItem_Click"/>
+												<dxb:GalleryItem Tag="612" Glyph="/Mapeditor;component/Images/ground/612.png" Click="imageItem_Click"/>
+												<dxb:GalleryItem Tag="613" Glyph="/Mapeditor;component/Images/ground/613.png" Click="imageItem_Click"/>
+												<dxb:GalleryItem Tag="614" Glyph="/Mapeditor;component/Images/ground/614.png" Click="imageItem_Click"/>
+												<dxb:GalleryItem Tag="615" Glyph="/Mapeditor;component/Images/ground/615.png" Click="imageItem_Click"/>
+												<dxb:GalleryItem Tag="616" Glyph="/Mapeditor;component/Images/ground/616.png" Click="imageItem_Click"/>
                                             </dxb:GalleryItemGroup.Items>
                                         </dxb:GalleryItemGroup>
                                     </dxb:Gallery.Groups>
@@ -94,9 +102,12 @@
                                                 <dxb:GalleryItem Tag="701" Glyph="/Mapeditor;component/Images/HideObject/Free.png" Click="HideObjectItem_Click"/>
                                                 <dxb:GalleryItem Tag="702" Glyph="/Mapeditor;component/Images/HideObject/Ground.png" Click="HideObjectItem_Click"/>
                                                 <dxb:GalleryItem Tag="703" Glyph="/Mapeditor;component/Images/HideObject/StairDown.png" Click="HideObjectItem_Click"/>
+                                                <dxb:GalleryItem Tag="713" Glyph="/Mapeditor;component/Images/HideObject/StairDownRight.png" Click="HideObjectItem_Click"/>
                                                 <dxb:GalleryItem Tag="704" Glyph="/Mapeditor;component/Images/HideObject/StairUp.png" Click="HideObjectItem_Click"/>
+												<dxb:GalleryItem Tag="714" Glyph="/Mapeditor;component/Images/HideObject/StairUpRight.png" Click="HideObjectItem_Click"/>
                                                 <dxb:GalleryItem Tag="705" Glyph="/Mapeditor;component/Images/HideObject/ChangeSence.png" Click="HideObjectItem_Click"/>
                                                 <dxb:GalleryItem Tag="706" Glyph="/Mapeditor;component/Images/HideObject/StopScroll.png" Click="HideObjectItem_Click"/>
+												<dxb:GalleryItem Tag="710" Glyph="/Mapeditor;component/Images/HideObject/BoundScene.png" Click="HideObjectItem_Click"/>
                                             </dxb:GalleryItemGroup.Items>
                                         </dxb:GalleryItemGroup>
                                     </dxb:Gallery.Groups>
