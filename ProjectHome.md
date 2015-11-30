@@ -1,0 +1,1 @@
+Map used to draw image
